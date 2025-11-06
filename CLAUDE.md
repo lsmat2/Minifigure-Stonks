@@ -74,3 +74,39 @@ ruff check .
 - **Historical Data**: Never delete, only mark as superseded
 - **Caching**: Redis with 5-15min TTL for API responses
 - **Error Handling**: Circuit breakers, retries, graceful degradation
+
+## Performance Optimization Checklist (Pre-Production)
+
+Before deploying to production, review and optimize:
+
+1. **Database Driver**: Replace `psycopg2-binary` with `psycopg2` in requirements.txt
+   - Binary version is development convenience only
+   - Production needs compiled version for 20-30% better performance
+   - Requires: `apt-get install libpq-dev` (Ubuntu) or `brew install postgresql` (Mac)
+
+2. **Database Indexes**: Review query patterns and add indexes
+   - `minifigures(set_number)` - frequently queried
+   - `price_listings(minifigure_id, timestamp)` - for time-series queries
+   - `price_listings(source, timestamp)` - for source-specific analytics
+
+3. **Query Optimization**: Use `.explain()` to identify slow queries
+   - Consider materialized views for complex analytics
+   - Implement database query result caching
+
+4. **Celery Workers**: Configure proper concurrency
+   - Development: 1-2 workers
+   - Production: Scale based on scraping volume (start with 4-8)
+
+5. **Redis Configuration**:
+   - Set maxmemory policy (`allkeys-lru` for cache eviction)
+   - Enable persistence if needed (RDB snapshots)
+
+6. **API Response Caching**: Implement cache headers and ETags
+   - Static data (minifigure catalog): 24h cache
+   - Price data: 5-15min cache
+   - Analytics: 1h cache
+
+7. **Frontend Optimization** (when implemented):
+   - Image optimization (WebP format, lazy loading)
+   - Code splitting and tree shaking
+   - CDN for static assets
