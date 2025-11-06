@@ -99,6 +99,32 @@ black .
 ruff check .
 ```
 
+## API Endpoints (Implemented)
+
+### Health & Minifigures
+- `GET /v1/health` - Service health check
+- `GET /v1/health/db` - Database connectivity check
+- `GET /v1/minifigures` - List minifigures (paginated, filterable)
+- `GET /v1/minifigures/{id}` - Get single minifigure
+- `POST /v1/minifigures` - Create minifigure
+- `PUT /v1/minifigures/{id}` - Update minifigure
+- `DELETE /v1/minifigures/{id}` - Delete minifigure
+
+### Price Endpoints (New)
+- `GET /v1/minifigures/{id}/prices` - Get raw price listings for a minifigure
+  - Query params: `condition`, `source_id`, `start_date`, `end_date`, `limit`
+  - Returns: List of individual listings, newest first
+
+- `GET /v1/minifigures/{id}/price-history` - Get historical price snapshots
+  - Query params: `start_date`, `end_date`
+  - Returns: Daily aggregated statistics (min/max/avg/median) for charting
+
+- `GET /v1/snapshots` - Query price snapshots with flexible filtering
+  - Query params: `minifigure_id`, `date`, `start_date`, `end_date`, `page`, `page_size`
+  - Returns: Paginated snapshots across minifigures
+
+**Interactive API Docs**: `http://localhost:8000/v1/docs`
+
 ## Key Implementation Notes
 
 - **Rate Limiting**: Respect API limits - BrickLink has strict quotas
@@ -106,6 +132,7 @@ ruff check .
 - **Historical Data**: Never delete, only mark as superseded
 - **Caching**: Redis with 5-15min TTL for API responses
 - **Error Handling**: Circuit breakers, retries, graceful degradation
+- **Metadata Reserved Word**: Use `extra_data` attribute (mapped to "metadata" column) to avoid SQLAlchemy Base.metadata conflict
 
 ## Performance Optimization Checklist (Pre-Production)
 

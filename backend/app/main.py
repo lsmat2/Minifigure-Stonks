@@ -9,7 +9,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import RedirectResponse
 
 from app.config import get_settings
-from app.api.v1 import health, minifigures
+from app.api.v1 import health, minifigures, prices
 
 settings = get_settings()
 
@@ -51,6 +51,12 @@ app.include_router(
     minifigures.router,
     prefix=f"/{settings.api_version}/minifigures",
     tags=["Minifigures"],
+)
+
+app.include_router(
+    prices.router,
+    prefix=f"/{settings.api_version}",
+    tags=["Prices"],
 )
 
 
