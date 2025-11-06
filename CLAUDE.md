@@ -38,13 +38,24 @@ best practices, and methods of assessing and filling knowledge gaps. Prioritize 
 - Fuzzy matching for minifigure names across sources
 - Confidence scores for matches, manual review queue for low-confidence
 
-**Data Model**
+**Data Model** (Implemented - see backend/db/SCHEMA.md for details)
 ```
-Minifigure: id, name, set_number, theme, year, lego_id, image_urls, metadata
-PriceListing: minifigure_id, source, price, currency, timestamp, condition, confidence_score
-PriceSnapshot: minifigure_id, date, min/max/avg/median_price, listing_count, sources
-UserAlert: user_id, minifigure_id, target_price, conditions
+data_sources: Platforms we scrape (BrickLink, eBay, LEGO, Brickset)
+minifigures: Core catalog (UUID id, set_number, theme, metadata JSONB)
+price_listings: Time-series data (TimescaleDB hypertable, partitioned by timestamp)
+  - All prices normalized to USD immediately
+  - Stores original_price, original_currency, exchange_rate for audit
+  - confidence_score for fuzzy matching quality
+  - raw_data JSONB for reprocessing
+price_snapshots: Daily aggregates (min/max/avg/median, pre-computed for speed)
 ```
+
+**Schema Design Decisions (v1)**:
+- No sellers table yet (deferred to v2, store seller_name as text)
+- Currency: Normalize all to USD immediately (simplifies queries)
+- Scraping logs: Minimal (status fields in data_sources, no separate jobs table)
+- JSONB metadata fields for flexibility without migrations
+- TimescaleDB hypertable with 7-day chunks for price_listings
 
 ## Development Commands
 
