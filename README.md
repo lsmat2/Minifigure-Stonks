@@ -26,26 +26,48 @@ Currently implementing:
 ## Quick Start
 
 ### Prerequisites
-- Docker & Docker Compose (recommended)
-  - OR Python 3.11+, PostgreSQL 14+, Redis
+
+**Choose one:**
+
+**Option 1: Docker** (Recommended - easier setup)
+- Install [Docker Desktop](https://www.docker.com/products/docker-desktop/) for Mac
+- Includes Docker Engine + Docker Compose
+
+**Option 2: Local Services** (No Docker)
+- Python 3.11+
+- PostgreSQL 14+ with TimescaleDB extension
+- Redis
 
 ### Option 1: Docker Development (Recommended)
 
+#### First-time setup:
+1. Install Docker Desktop: https://www.docker.com/products/docker-desktop/
+2. Start Docker Desktop app
+3. Verify installation:
+   ```bash
+   docker --version
+   docker compose version
+   ```
+
+#### Daily usage:
 ```bash
 # Start all services (PostgreSQL + TimescaleDB + Redis)
-docker-compose up -d
+# New Docker: use "docker compose" (space, not hyphen)
+docker compose up -d
+# OR for older Docker: docker-compose up -d
+# OR use Makefile: make up
 
 # Verify services are running
-docker-compose ps
+docker compose ps
 
 # View logs
-docker-compose logs -f
+docker compose logs -f
 
 # Stop services
-docker-compose down
+docker compose down
 
 # Stop and remove all data
-docker-compose down -v
+docker compose down -v
 ```
 
 The database will be available at `localhost:5432` and Redis at `localhost:6379`.
