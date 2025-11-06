@@ -1,0 +1,82 @@
+version: '3.8'
+
+services:
+  # PostgreSQL with TimescaleDB extension for time-series price data
+  db:
+    image: timescale/timescaledb:latest-pg14
+    container_name: minifig_db
+    environment:
+      POSTGRES_USER: minifig_user
+      POSTGRES_PASSWORD: minifig_dev_password
+      POSTGRES_DB: minifigure_stonks
+    ports:
+      - "5432:5432"
+    volumes:
+      # Persist database data between container restarts
+      - postgres_data:/var/lib/postgresql/data
+      # Mount init scripts (will create later for TimescaleDB setup)
+      - ./backend/db/init:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U minifig_user -d minifigure_stonks"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Redis for Celery task queue and caching
+  redis:
+    image: redis:7-alpine
+    container_name: minifig_redis
+    ports:
+      - "6379:6379"
+    volumes:
+      # Persist Redis data (optional, can disable for pure cache usage)
+      - redis_data:/data
+    command: redis-server --appendonly yes
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Backend API (will be enabled once we have the FastAPI app)
+  # Commented out for now - uncomment after creating Dockerfile
+  # api:
+  #   build:
+  #     context: ./backend
+  #     dockerfile: Dockerfile
+  #   container_name: minifig_api
+  #   environment:
+  #     DATABASE_URL: postgresql://minifig_user:minifig_dev_password@db:5432/minifigure_stonks
+  #     REDIS_URL: redis://redis:6379/0
+  #   ports:
+  #     - "8000:8000"
+  #   volumes:
+  #     - ./backend:/app
+  #   depends_on:
+  #     db:
+  #       condition: service_healthy
+  #     redis:
+  #       condition: service_healthy
+  #   command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+
+  # Celery worker (will be enabled later)
+  # worker:
+  #   build:
+  #     context: ./backend
+  #     dockerfile: Dockerfile
+  #   container_name: minifig_worker
+  #   environment:
+  #     DATABASE_URL: postgresql://minifig_user:minifig_dev_password@db:5432/minifigure_stonks
+  #     REDIS_URL: redis://redis:6379/0
+  #   volumes:
+  #     - ./backend:/app
+  #   depends_on:
+  #     db:
+  #       condition: service_healthy
+  #     redis:
+  #       condition: service_healthy
+  #   command: celery -A app.celery_app worker --loglevel=info
+
+volumes:
+  postgres_data:
+  redis_data:

@@ -1,0 +1,44 @@
+# Don't copy these into Docker image
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+ENV/
+.venv
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Environment files
+.env
+.env.local
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Git
+.git/
+.gitignore
+
+# Documentation
+README.md
+CLAUDE.md
+
+# Database
+*.db
+*.sqlite3
+
+# Docker
+Dockerfile
+docker-compose.yml
+.dockerignore

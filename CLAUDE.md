@@ -48,9 +48,30 @@ UserAlert: user_id, minifigure_id, target_price, conditions
 
 ## Development Commands
 
+### Docker Environment
+```bash
+# Start all services (PostgreSQL + TimescaleDB + Redis)
+docker-compose up -d
+
+# View logs
+docker-compose logs -f [service_name]
+
+# Stop services
+docker-compose down
+
+# Rebuild after Dockerfile changes
+docker-compose up -d --build
+
+# Access database
+docker exec -it minifig_db psql -U minifig_user -d minifigure_stonks
+
+# Access Redis CLI
+docker exec -it minifig_redis redis-cli
+```
+
 ### Backend
 ```bash
-# Setup
+# Setup (if not using Docker)
 cd backend
 python -m venv venv
 source venv/bin/activate

@@ -26,33 +26,75 @@ Currently implementing:
 ## Quick Start
 
 ### Prerequisites
-- Python 3.11+
-- PostgreSQL 14+
-- Redis (for task queue)
+- Docker & Docker Compose (recommended)
+  - OR Python 3.11+, PostgreSQL 14+, Redis
 
-### Backend Setup
+### Option 1: Docker Development (Recommended)
 
 ```bash
+# Start all services (PostgreSQL + TimescaleDB + Redis)
+docker-compose up -d
+
+# Verify services are running
+docker-compose ps
+
+# View logs
+docker-compose logs -f
+
+# Stop services
+docker-compose down
+
+# Stop and remove all data
+docker-compose down -v
+```
+
+The database will be available at `localhost:5432` and Redis at `localhost:6379`.
+
+**Database Credentials:**
+- User: `minifig_user`
+- Password: `minifig_dev_password`
+- Database: `minifigure_stonks`
+
+### Option 2: Local Development (Without Docker)
+
+```bash
+# Install PostgreSQL + TimescaleDB + Redis
+brew install postgresql@14 redis timescaledb
+brew services start postgresql@14
+brew services start redis
+
+# Setup backend
 cd backend
 python -m venv venv
 source venv/bin/activate  # On Windows: venv\Scripts\activate
 pip install -r requirements.txt
 
-# Copy environment template and configure
+# Configure environment
 cp .env.example .env
-# Edit .env with your database and API credentials
+# Edit .env with your credentials
 
-# Run development server
+# Create database
+createdb minifigure_stonks
+psql -d minifigure_stonks -c "CREATE EXTENSION timescaledb;"
+
+# Run development server (once FastAPI app is created)
 uvicorn app.main:app --reload
 ```
 
 ## Project Structure
 
 ```
-backend/          # FastAPI backend
-  app/            # Application code
-  requirements.txt
-frontend/         # Next.js frontend (coming soon)
+backend/
+  app/                    # Application code (coming soon)
+  db/
+    init/                 # Database initialization scripts
+      01-enable-timescaledb.sql
+  Dockerfile              # Backend container definition
+  requirements.txt        # Python dependencies
+  .env.example           # Environment template
+docker-compose.yml        # Multi-service orchestration
+frontend/                 # Next.js frontend (coming soon)
+CLAUDE.md                 # AI assistant guidance
 ```
 
 ## Data Sources
