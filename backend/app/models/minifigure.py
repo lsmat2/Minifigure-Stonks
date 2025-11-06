@@ -34,8 +34,8 @@ class Minifigure(Base):
     weight_grams = Column(Numeric(8, 2))
     piece_count = Column(Integer)
 
-    # Flexible metadata
-    metadata = Column(JSONB, default={})
+    # Flexible metadata (using extra_data instead of metadata which is reserved)
+    extra_data = Column("metadata", JSONB, default={})
 
     # Timestamps
     created_at = Column(DateTime(timezone=True), server_default=func.now())

@@ -81,8 +81,8 @@ class PriceSnapshot(Base):
     listing_count = Column(Integer, nullable=False)
     sources_count = Column(Integer, nullable=False)
 
-    # Metadata
-    metadata = Column(JSONB, default={})
+    # Metadata (using extra_data instead of metadata which is reserved)
+    extra_data = Column("metadata", JSONB, default={})
 
     # Timestamps
     created_at = Column(DateTime(timezone=True), server_default=func.now())

@@ -40,7 +40,7 @@ class PriceSnapshotResponse(BaseModel):
     median_price_usd: Decimal
     listing_count: int
     sources_count: int
-    metadata: Optional[dict] = Field(default_factory=dict)
+    extra_data: Optional[dict] = Field(default_factory=dict, alias="metadata")
 
     model_config = ConfigDict(from_attributes=True)
 
