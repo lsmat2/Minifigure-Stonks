@@ -22,7 +22,7 @@ class MinifigureBase(BaseModel):
     thumbnail_url: Optional[str] = Field(None, description="Thumbnail URL")
     weight_grams: Optional[float] = Field(None, description="Weight in grams")
     piece_count: Optional[int] = Field(None, description="Number of pieces")
-    extra_data: Optional[dict] = Field(default_factory=dict, description="Additional metadata", alias="metadata")
+    extra_data: Optional[dict] = Field(default_factory=dict, description="Additional metadata", serialization_alias="metadata")
 
 
 class MinifigureCreate(MinifigureBase):
