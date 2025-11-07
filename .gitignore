@@ -43,3 +43,8 @@ build/
 # Network startup scripts
 .backend.pid
 .frontend.pid
+
+# Celery
+celerybeat-schedule
+celerybeat.pid
+*.sage.py
